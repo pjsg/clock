@@ -1,4 +1,4 @@
-pin = { 3, 8 }
+pin = { 3, 7 }
 
 inactive = 0
 
@@ -12,10 +12,12 @@ gpio.write(pin[1], inactive)
 gpio.write(pin[2], inactive)
 
 local time = require "time"
+local power = require "powerstatus"
+
 local timer = tmr.create()
 
 function tick()
-  if adc.read(0) > 800 then
+  if power.powerok() then
       local want, clock, inus, evenodd = time.get()
       if want >= 0 and inus >= 0 then
           --print ('want', want, clock, inus)
@@ -47,8 +49,16 @@ function tick()
               --print ('P', P[1], P[2], P[3], 'steps', steps, 'gap', gap)
               return
             end
+          elseif offset < 43180 and (want % 10) == 0 then
+            -- want one tick every 10 seconds to show clock is alive
+            local P = { 1000000, pulsetime, 10000}
+            gpio.serout(pin[evenodd > 0 and 1 or 2], inactive, P, 1, 
+            function () time.tick() tick() end) 
+            return
           end
       end
+  else
+      time.save()
   end
   timer:alarm(250, 0, function() tick() end)
 end

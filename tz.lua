@@ -5,7 +5,7 @@ local M = {}
 local tstart = 0
 local tend = 0
 local toffset = 0
-local filename = 'zoneinfo'
+local filename = 'eastern.zone'
 
 function M.load(t)
   local z = file.open(filename, "r")

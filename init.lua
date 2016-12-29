@@ -20,7 +20,7 @@ end
 --syslog = require("syslog")("192.168.1.68");
 
 function startsync()
-    sntp.sync({"192.168.1.20", "192.168.1.68", "1.pool.ntp.org", "2.pool.ntp.org", '3.pool.ntp.org'
+    sntp.sync({"192.168.1.21", "0.nodemcu.pool.ntp.org", "1.nodemcu.pool.ntp.org", "2.nodemcu.pool.ntp.org"
     }, function (a,b, c, d ) 
       print(a,b, c, d['offset_us']) printrtc() 
       logit(c, d)
