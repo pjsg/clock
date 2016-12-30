@@ -14,7 +14,7 @@ local tz = require "tz"
 
 function M.tick() 
   pulse = PULSEVAL - pulse
-  M.set(clockpos + 1)
+  M.setpos(clockpos + 1)
   if not statefile then
     -- this means that we have already saved the (now) wrong pos
     file.remove(filename)
@@ -30,7 +30,7 @@ function M.start()
   running = 1
 end
 
-function M.set(pos)
+function M.setpos(pos)
   clockpos = pos % 43200
   rtcmem.write32(MEMPOS, clockpos + pulse)
 end
@@ -42,6 +42,14 @@ end
 
 function M.gethms()
   return clockpos / 3600, (clockpos / 60) % 60, clockpos % 60
+end
+
+function M.getpos()
+  return clockpos
+end
+
+function M.getrunning()
+  return running
 end
 
 function M.get()
@@ -89,7 +97,7 @@ local mem = rtcmem.read32(MEMPOS)
 clockpos = bit.band(mem, PULSEVAL - 1)
 pulse = bit.band(mem, PULSEVAL)
 if clockpos < 0 or clockpos >= 43200 then
-  M.set(0)
+  M.setpos(0)
 end
 
 

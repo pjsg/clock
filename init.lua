@@ -18,10 +18,12 @@ function logit(server, data)
 end
 
 --syslog = require("syslog")("192.168.1.68");
+lastNtpResult = {}
 
 function startsync()
     sntp.sync({"192.168.1.21", "0.nodemcu.pool.ntp.org", "1.nodemcu.pool.ntp.org", "2.nodemcu.pool.ntp.org"
     }, function (a,b, c, d ) 
+      lastNtpResult = { secs=a, usecs=b, server=c, info=d }
       print(a,b, c, d['offset_us']) printrtc() 
       logit(c, d)
       --syslog:send("SNTP: Server " .. c .. " offset " .. (d['offset_us'] or 'nil') .. " delay " .. (d['delay_us'] or 'nil') .. " rate " .. rtcmem.read32(14))
@@ -42,6 +44,8 @@ tmr.alarm(0, 3000, 1, function()
    end
    tmr.unregister(0)
    startsync()
+   mdns.register("clock")
+   dofile("webserver.lua").register(dofile("httpserver.lua"))
 end)
 
 dofile("pps.lua")

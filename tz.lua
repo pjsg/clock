@@ -5,10 +5,25 @@ local M = {}
 local tstart = 0
 local tend = 0
 local toffset = 0
-local filename = 'eastern.zone'
+local config = require "config"
+
+function M.exists(zone)
+  return file.exists(zone + ".zone")
+end
+
+function M.getzones()
+  local result = {}
+  for fn, _ in pairs(file.list()) do
+    local _, _, prefix = string.find(fn, "(.*).zone")
+    if prefix then
+      table.insert(result, prefix)
+    end
+  end
+  return result
+end
 
 function M.load(t)
-  local z = file.open(filename, "r")
+  local z = file.open(config.tz .. ".zone", "r")
 
   local hdr = z:read(20)
   local magic = struct.unpack("c4 B", hdr)
